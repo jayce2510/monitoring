@@ -7,10 +7,10 @@ route:
 receivers:
 - name: 'gmail-notifications'
   email_configs:
-  - to: jayce.nguyen@fitlg.asia
-    from: alviss2510@gmail.com
+  - to: receive email address
+    from: send email address
     smarthost: smtp.gmail.com:587
-    auth_username: alviss2510@gmail.com
-    auth_identity: alviss2510@gmail.com
+    auth_username: send email address
+    auth_identity: send email address
     auth_password: 
     send_resolved: true
