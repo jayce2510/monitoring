@@ -1,0 +1,124 @@
+version: '3.5'
+
+
+volumes:
+    prometheus_data:
+    influxdb-volume:
+
+
+services:
+#----------GRAGANA DASHBOARD-------------------------------------------------
+  grafana:
+    image: grafana/grafana
+    container_name: Grafana
+    depends_on:
+      - prometheus
+      - influxdb
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+#      - ./grafana_data/provisioning/:/etc/grafana/provisioning/
+    environment:
+      GF_INSTALL_PLUGINS:  "alexanderzobnin-zabbix-app,\
+                            grafana-influxdb-08-datasource,\
+                            grafana-kairosdb-datasource,\
+                            grafana-piechart-panel,\
+                            grafana-simple-json-datasource,\
+                            grafana-worldmap-panel,\
+                            grafana-clock-panel"
+      GF_SECURITY_ADMIN_USER: $GF_SECURITY_ADMIN_USER
+      GF_SECURITY_ADMIN_PASSWORD: $GF_SECURITY_ADMIN_PASSWORD
+    restart: always
+
+#----------PROMETHEUS SERVICES-------------------------------------------------
+# Prometheus
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus-server
+    volumes:
+      - ./prometheus:/etc/prometheus
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+    #links:
+    # - cadvisor:cadvisor
+    # - alertmanager:alertmanager
+    # - pushgateway:pushgateway
+    depends_on:
+      - cadvisor
+      - pushgateway
+    restart: always
+
+  node-exporter:
+    image: prom/node-exporter
+    container_name: node-exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+    ports:
+      - 9100:9100
+    restart: always
+
+# Alert manager
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    ports:
+      - 9093:9093
+    volumes:
+      - ./alertmanager:/etc/alertmanager
+    restart: always
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+
+# Cadvisor
+  cadvisor:
+    image: google/cadvisor
+    container_name: Cadvisor
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+    ports:
+      - 8080:8080
+    restart: always
+
+# Push gateway
+  pushgateway:
+    image: prom/pushgateway
+    container_name: pushgateway
+    restart: always
+    expose:
+      - 9091
+    ports:
+      - "9091:9091"
+
+#--------INFLUXDB SERVICES--------------------------------------
+  influxdb:
+    image: influxdb:1.8.10
+    container_name: influxdb
+    restart: always
+    hostname: influxdb
+    ports:
+      - 8086:8086
+      - 8089:8089/udp
+    environment:
+      INFLUXDB_DB: $INFLUX_DB
+      INFLUXDB_USER: $INFLUXDB_USER
+      INFLUXDB_USER_PASSWORD: $INFLUXDB_USER_PASSWORD
+
+
