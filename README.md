@@ -1,7 +1,7 @@
 # monitoring
 
 # grafana data volume
-change permission for grafana folder so the it can read files in docker
+change the permission for grafana folder so the it can read files in docker
 
 # configure influxdb.conf file
 connect to cli of influxdb in container
