@@ -5,9 +5,11 @@ change permission for grafana folder so the it can read files in docker
 
 # configure influxdb.conf file
 connect to cli of influxdb in container
+
    docker exec -it influxdb /bin/bash
 
 install nano and edit conf file
+   
    sudo apt update
    sudo apt install nano
    sudo nano /etc/influxdb/influxdb.conf
