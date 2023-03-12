@@ -1,23 +1,23 @@
 # MONITORING
 
 # Grafana data volume
-change the permission to 775 for grafana folder so the it can read files in docker
+Change the permission to 775 for grafana folder so the it can read files in docker
 
 # Configure influxdb.conf file
-connect to cli of influxdb in container
+Connect to cli of influxdb in container
 
    ```
    docker exec -it influxdb /bin/bash
    ```
 
-install nano and edit conf file
+Install nano and edit conf file
    ```
    apt update
    apt install nano
    nano /etc/influxdb/influxdb.conf
    ```
 
-add this one to the conf file
+Add this one to the conf file
 ```
 [[udp]]
    enabled = true
@@ -26,5 +26,5 @@ add this one to the conf file
    batch-size = 5000
    batch-timeout = "1s"
 ```   
-restart the influxdb container  
+Restart the influxdb container  
 
