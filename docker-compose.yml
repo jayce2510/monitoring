@@ -17,7 +17,7 @@ services:
     ports:
       - 3000:3000
     volumes:
-      - ./grafana:/var/lib/grafana
+      - ./grafana/data:/var/lib/grafana
 #      - ./grafana_data/provisioning/:/etc/grafana/provisioning/
     environment:
       GF_INSTALL_PLUGINS:  "alexanderzobnin-zabbix-app,\
